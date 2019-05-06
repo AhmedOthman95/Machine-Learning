@@ -1,0 +1,46 @@
+import pandas as pd    #to import and manage dataset
+import matplotlib.pyplot as plt   # to plot charts
+import numpy as np  #for mathematical operations
+#import preprocessing to use labelEncoder
+from sklearn import preprocessing
+#import the dataset
+dataset = pd.read_csv('Social_Network_Ads.csv')
+#use label encoder to avoid error when reading the Gender column as it is string  
+le = preprocessing.LabelEncoder()
+dataset['Gender'] = le.fit_transform(dataset.Gender.values)
+#get values of colomn number 2 and 3 of the dataset
+X = dataset.iloc[:, [1,2,3]].values 
+# get values of colomn number 4 of the dataset
+Y = dataset.iloc[:, 4].values 
+# import library for split the dataset
+from sklearn.model_selection import train_test_split 
+#here we will get 4 outputs from the method train_test_split
+#split the dataset into training and testing values
+#X,Y are the input of the method
+#test_size is the size of test values
+#random_state=0 to generate the same numbers each time 
+X_train, X_test, y_train, y_test = train_test_split(X,Y,test_size=0.25,random_state=0)
+
+#scalling the dataset to make all featuers have the same scale
+from sklearn.preprocessing import StandardScaler
+# method used for scalling
+sc = StandardScaler() 
+#fit_transform:fit determine features that will be transformed and transform make the transformation  
+X_train = sc.fit_transform(X_train) 
+#transform make transformation only 
+X_test = sc.transform(X_test)
+#import the randomforest method from sklearn.ensemble
+from sklearn.ensemble import RandomForestClassifier 
+#make an instance of the randomforest method
+classifier = RandomForestClassifier(random_state = 0)
+#applying the method on x_train and y_train to fit the model "create the model"
+classifier.fit(X_train, y_train)
+#using input X_test and get predictions 
+Y_Pred = classifier.predict(X_test)
+#using the confusion_matrix to measure the performance of the randpmforest algorithm
+from sklearn.metrics import confusion_matrix, accuracy_score
+#each row of this matrix represent the instance of the actual class
+#each column represent the instance of the predicted class
+cm = confusion_matrix(y_test, Y_Pred)
+#to measure the accuracy of the algorithm
+accuracy = accuracy_score(y_test, Y_Pred)
